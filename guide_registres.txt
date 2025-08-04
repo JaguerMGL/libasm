@@ -1,0 +1,208 @@
+# Guide des Registres x86_64 pour l'Assembleur
+
+## 🎯 Convention d'Appel System V (Linux/macOS)
+
+### 📋 Ordre des Paramètres de Fonction
+Les 6 premiers paramètres sont passés dans ces registres (dans l'ordre) :
+
+1. **RDI** ← Premier paramètre
+2. **RSI** ← Deuxième paramètre  
+3. **RDX** ← Troisième paramètre
+4. **RCX** ← Quatrième paramètre
+5. **R8**  ← Cinquième paramètre
+6. **R9**  ← Sixième paramètre
+
+**Paramètres suivants** : passés sur la pile (stack)
+
+### 🔄 Valeur de Retour
+- **RAX** : Valeur de retour de la fonction
+
+---
+
+## 📝 Exemple avec ft_strcpy
+
+```c
+char *ft_strcpy(char *dest, const char *src);
+```
+
+**Mapping des paramètres :**
+- `dest` (1er param) → **RDI**
+- `src` (2ème param) → **RSI**
+- **Retour** → **RAX** (doit contenir l'adresse de dest)
+
+**Votre code analysé :**
+```assembly
+ft_strcpy:
+    mov rcx, 0          ; rcx = compteur (index)
+loop:
+    mov al, [rsi + rcx] ; al = src[rcx] (lecture depuis RSI = src)
+    mov [rdi + rcx], al ; dest[rcx] = al (écriture vers RDI = dest)
+    inc rcx             ; rcx++
+    cmp al, 0           ; vérifier si caractère nul
+    je end
+    jne loop
+end:
+    mov rax, rdi        ; retourner dest (RDI → RAX)
+    ret
+```
+
+---
+
+## 🗂️ Classification des Registres
+
+### 🔵 Registres 64-bit (Entiers)
+| Registre | Usage | Sauvegarde | Description |
+|----------|-------|------------|-------------|
+| **RAX** | Valeur de retour | Non | Accumulateur |
+| **RBX** | Usage général | **Oui** | Base |
+| **RCX** | 4e paramètre | Non | Compteur |
+| **RDX** | 3e paramètre | Non | Données |
+| **RSI** | 2e paramètre | Non | Source Index |
+| **RDI** | 1er paramètre | Non | Destination Index |
+| **RBP** | Base pointer | **Oui** | Frame pointer |
+| **RSP** | Stack pointer | **Oui** | Pointeur de pile |
+| **R8-R11** | Paramètres/temp | Non | Usage général |
+| **R12-R15** | Usage général | **Oui** | Préservés |
+
+### 🎨 Sous-registres (32/16/8 bits)
+
+#### Exemple avec RAX :
+```
+RAX (64-bit) : [--------AAAAAAAA--------]
+EAX (32-bit) :         [AAAAAAAA]
+AX  (16-bit) :            [AAAA]
+AH  (8-bit)  :            [AA--]  (High byte)
+AL  (8-bit)  :            [--AA]  (Low byte)
+```
+
+#### Tous les registres :
+| 64-bit | 32-bit | 16-bit | 8-bit (low) | 8-bit (high) |
+|--------|--------|--------|-------------|--------------|
+| RAX | EAX | AX | AL | AH |
+| RBX | EBX | BX | BL | BH |
+| RCX | ECX | CX | CL | CH |
+| RDX | EDX | DX | DL | DH |
+| RSI | ESI | SI | SIL | - |
+| RDI | EDI | DI | DIL | - |
+| RBP | EBP | BP | BPL | - |
+| RSP | ESP | SP | SPL | - |
+
+---
+
+## 💡 Choix des Registres - Guide Pratique
+
+### 🎯 Pour les Boucles
+```assembly
+; Compteur de boucle
+mov rcx, 0          ; RCX idéal pour les compteurs
+loop:
+    ; ... code ...
+    inc rcx
+    cmp rcx, limite
+    jl loop
+```
+
+### 📝 Pour Manipulation de Caractères
+```assembly
+; Utiliser les registres 8-bit pour les caractères
+mov al, [rsi]       ; AL = caractère (8 bits)
+mov [rdi], al       ; Copier le caractère
+```
+
+### 🔄 Pour les Adresses
+```assembly
+; Utiliser les registres 64-bit pour les pointeurs
+mov rax, rdi        ; Sauvegarder une adresse
+lea rbx, [rdi + 8]  ; Calculer une nouvelle adresse
+```
+
+---
+
+## 📚 Exemples de Fonctions Courantes
+
+### ft_strlen(const char *s)
+```assembly
+ft_strlen:
+    ; s → RDI
+    mov rcx, 0          ; compteur
+loop:
+    cmp BYTE PTR [rdi + rcx], 0
+    je end
+    inc rcx
+    jmp loop
+end:
+    mov rax, rcx        ; retour → RAX
+    ret
+```
+
+### ft_strcmp(const char *s1, const char *s2)
+```assembly
+ft_strcmp:
+    ; s1 → RDI, s2 → RSI
+    mov rcx, 0          ; index
+loop:
+    mov al, [rdi + rcx] ; s1[i]
+    mov bl, [rsi + rcx] ; s2[i]
+    cmp al, bl
+    jne diff
+    test al, al         ; vérifier fin de chaîne
+    jz equal
+    inc rcx
+    jmp loop
+diff:
+    sub al, bl          ; différence
+    movsx rax, al       ; étendre le signe
+    ret
+equal:
+    xor rax, rax        ; retour 0
+    ret
+```
+
+---
+
+## ⚠️ Règles Importantes
+
+### 🛡️ Registres à Préserver
+Si vous utilisez **RBX, RBP, R12-R15**, vous DEVEZ les sauvegarder :
+```assembly
+ma_fonction:
+    push rbx            ; Sauvegarder
+    ; ... utiliser rbx ...
+    pop rbx             ; Restaurer
+    ret
+```
+
+### 🚫 Registres Temporaires
+**RAX, RCX, RDX, RSI, RDI, R8-R11** peuvent être modifiés librement.
+
+### 📏 Alignement de la Pile
+La pile doit être alignée sur 16 bytes avant un appel de fonction.
+
+---
+
+## 🎪 Astuces Mnémotechniques
+
+- **RDI** = **D**estination **I**ndex → Premier paramètre (souvent destination)
+- **RSI** = **S**ource **I**ndex → Deuxième paramètre (souvent source)
+- **RAX** = **A**ccumulator → Toujours la valeur de retour
+- **RCX** = **C**ounter → Parfait pour les compteurs de boucle
+- **AL** = **A** **L**ow → Pour manipuler des bytes (caractères)
+
+---
+
+## 🔧 Outils de Debugging
+
+### Vérifier les registres :
+```bash
+# Avec GDB
+gdb ./votre_programme
+(gdb) break ft_strcpy
+(gdb) run
+(gdb) info registers
+```
+
+### Afficher la mémoire :
+```bash
+(gdb) x/s $rdi    # Afficher la chaîne pointée par RDI
+(gdb) x/s $rsi    # Afficher la chaîne pointée par RSI
+```
