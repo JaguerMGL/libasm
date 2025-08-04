@@ -1,12 +1,8 @@
 .intel_syntax noprefix
 
 .global ft_strdup
-.global _ft_strdup
-.global __ft_strdup
 
 ft_strdup:
-_ft_strdup:
-__ft_strdup:
     cmp rdi, 0
     jz null_error
     push rdi

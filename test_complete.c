@@ -4,26 +4,26 @@
 #include <stdlib.h>
 #include <fcntl.h>
 
-extern size_t _ft_strlen(const char *str);
-extern int _ft_strcmp(const char *str1, const char *str2);
-extern char* _ft_strcpy(char *dest, const char *src);
-extern ssize_t _ft_write(int fd, const void *buf, size_t count);
-extern ssize_t _ft_read(int fd, void *buf, size_t count);
-extern char* _ft_strdup(const char *str);
+extern size_t ft_strlen(const char *str);
+extern int ft_strcmp(const char *str1, const char *str2);
+extern char* ft_strcpy(char *dest, const char *src);
+extern ssize_t ft_write(int fd, const void *buf, size_t count);
+extern ssize_t ft_read(int fd, void *buf, size_t count);
+extern char* ft_strdup(const char *str);
 
 int main() {
     printf("=== Tests libasm ===\n\n");
     
     printf("--- Test ft_strlen ---\n");
     char *test = "Hello World";
-    printf("ft_strlen: %zu\n", _ft_strlen(test));
+    printf("ft_strlen: %zu\n", ft_strlen(test));
     printf("strlen:    %zu\n", strlen(test));
     printf("\n");
     
     printf("--- Test ft_strcmp ---\n");
     char *str1 = "abcde";
     char *str2 = "abcdef";
-    printf("ft_strcmp('%s', '%s'): %d\n", str1, str2, _ft_strcmp(str1, str2));
+    printf("ft_strcmp('%s', '%s'): %d\n", str1, str2, ft_strcmp(str1, str2));
     printf("strcmp('%s', '%s'):    %d\n", str1, str2, strcmp(str1, str2));
     printf("\n");
     
@@ -32,16 +32,16 @@ int main() {
     char dest2[50] = "Initial content";
     char *src = "Copied string";
     printf("Before: dest = '%s'\n", dest1);
-    printf("ft_strcpy result: '%s'\n", _ft_strcpy(dest1, src));
+    printf("ft_strcpy result: '%s'\n", ft_strcpy(dest1, src));
     printf("strcpy result:    '%s'\n", strcpy(dest2, src));
     printf("\n");
     
     printf("--- Test ft_write ---\n");
-    printf("system write: ");
+    printf(" write: ");
     ssize_t write_result1 = write(1, test, strlen(test));
     printf(" (returned %zd)\n", write_result1);
-    printf("ft_write:     ");
-    ssize_t write_result2 = _ft_write(1, test, strlen(test));
+    printf(" ft_write:     ");
+    ssize_t write_result2 = ft_write(1, test, strlen(test));
     printf(" (returned %zd)\n", write_result2);
     printf("\n");
     
@@ -57,10 +57,10 @@ int main() {
             char buffer1[100] = {0};
             char buffer2[100] = {0};
             
-            ssize_t read_result1 = _ft_read(fd, buffer1, 20);
+            ssize_t read_result1 = ft_read(fd, buffer1, 20);
             close(fd);
             
-            fd = open("test_read.tmp", O_RDONLY);
+            fd = open("test.tmp", O_RDONLY);
             ssize_t read_result2 = read(fd, buffer2, 20);
             close(fd);
             
@@ -72,7 +72,7 @@ int main() {
     printf("\n");
 
     printf("--- Test ft_strdup ---\n");
-    char *dup1 = _ft_strdup(test);
+    char *dup1 = ft_strdup(test);
     char *dup2 = strdup(test);
     printf("Original:  '%s' (addr: %p)\n", test, (void*)test);
     printf("ft_strdup: '%s' (addr: %p)\n", dup1, (void*)dup1);

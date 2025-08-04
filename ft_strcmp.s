@@ -1,12 +1,8 @@
 .intel_syntax noprefix
 
 .global ft_strcmp
-.global _ft_strcmp
-.global __ft_strcmp
 
 ft_strcmp:
-_ft_strcmp:
-__ft_strcmp:
     mov rcx, 0
 
 loop:

@@ -1,12 +1,8 @@
 .intel_syntax noprefix
 
 .global ft_write
-.global _ft_write
-.global __ft_write
 
 ft_write:
-_ft_write:
-__ft_write:
     mov rax, 1
     syscall
     cmp rax, 0

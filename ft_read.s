@@ -1,12 +1,8 @@
 .intel_syntax noprefix
 
 .global ft_read
-.global _ft_read
-.global __ft_read
 
 ft_read:
-_ft_read:
-__ft_read:
     mov rax, 0
     syscall
     cmp rax, 0
