@@ -1,6 +1,7 @@
-.intel_syntax noprefix
+section .text
 
-.global ft_read
+global ft_read
+extern __errno_location
 
 ft_read:
     mov rax, 0
@@ -12,7 +13,7 @@ ft_read:
 error:
     neg rax
     mov r8, rax
-    call __errno_location
+    call __errno_location wrt ..plt
     mov [rax], r8
     mov rax, -1
     ret

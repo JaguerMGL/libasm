@@ -1,13 +1,13 @@
-.intel_syntax noprefix
+section .text
 
-.global ft_strcmp
+global ft_strcmp
 
 ft_strcmp:
     mov rcx, 0
 
 loop:
-    movzx rax, BYTE PTR [rdi + rcx]
-    movzx rdx, BYTE PTR [rsi + rcx]
+    movzx rax, byte [rdi + rcx]
+    movzx rdx, byte [rsi + rcx]
     cmp rax, rdx
     jne different
     cmp rax, 0

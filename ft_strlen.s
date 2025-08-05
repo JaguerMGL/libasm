@@ -1,12 +1,12 @@
-.intel_syntax noprefix
+section .text
 
-.global ft_strlen
+global ft_strlen
 
 ft_strlen:
     mov rcx, 0
     
 loop:
-    cmp BYTE PTR [rdi + rcx], 0
+    cmp byte [rdi + rcx], 0
     je end
     inc rcx
     jmp loop

@@ -1,6 +1,9 @@
-.intel_syntax noprefix
+section .text
 
-.global ft_strdup
+global ft_strdup
+extern ft_strlen
+extern ft_strcpy
+extern malloc
 
 ft_strdup:
     cmp rdi, 0
